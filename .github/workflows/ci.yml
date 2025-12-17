@@ -3,7 +3,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ "main" ]   # se o teu branch for master, troca para [ "master" ]
+    branches: ["main"]   # altera para ["master"] se a tua branch padrão for master
 
 jobs:
   build:
@@ -21,3 +21,29 @@ jobs:
         with:
           context: .
           push: false
+          tags: juice-shop-image:latest
+
+  sast-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep SAST Scan
+        uses: returntocorp/semgrep-action@v1
+
+  sca-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run OWASP Dependency-Check
+               uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: "juice-shop"
+          path: "."
+          format: "HTML"
+          out: "reports"
