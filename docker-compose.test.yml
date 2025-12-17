@@ -1,8 +1,20 @@
+
+#version: "3.8"
+
 services:
-  sut:
-    build: ./test/smoke/
-    links:
-      - app
-  app:
+  juiceshop:
     image: bkimminich/juice-shop:latest
-    build: ./
+    container_name: juice_shop
+    ports:
+      - "3000:3000"
+    restart: always
+    environment:
+      # Optional, but useful if you want to customize:
+      # NODE_ENV can be "production" or "development"
+      NODE_ENV: production
+      PORT: 3000
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', res => process.exit(res.statusCode === 200 ? 0 : 1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
